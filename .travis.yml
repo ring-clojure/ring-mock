@@ -1,0 +1,5 @@
+language: clojure
+script: lein test-all
+jdk:
+  - openjdk7
+  - openjdk6
