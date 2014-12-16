@@ -1,9 +1,9 @@
 # Ring-Mock
 
-Ring-Mock is a library for creating [Ring][1] request maps for testing
+Ring-Mock is a library for creating [Ring][] request maps for testing
 purposes.
 
-[1]: https://github.com/mmcgrana/ring
+[ring]: https://github.com/ring-clojure/ring
 
 ## Installation
 
@@ -13,7 +13,7 @@ Add the following development dependency to your `project.clj` file:
 
 ## Documentation
 
-* [API Documentation](http://weavejester.github.com/ring-mock)
+* [API Documentation](https://ring-clojure.github.io/ring-mock/ring.mock.request.html)
 
 ## Example
 
