@@ -1,4 +1,4 @@
-(ns ring.mock.test.request
+(ns ring.mock.request-test
   (:require [clojure.java.io :as io])
   (:use clojure.test
         ring.mock.request))
