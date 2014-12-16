@@ -1,8 +1,7 @@
 (ns ring.mock.test.request
-  (:use clojure.test
-        ring.mock.request)
   (:require [clojure.java.io :as io])
-  (:import [java.io InputStream StringWriter]))
+  (:use clojure.test
+        ring.mock.request))
 
 (deftest test-request
   (testing "relative uri"
@@ -103,26 +102,21 @@
                (query-string {:c "d"}))
            {:query-string "c=d"}))))
 
-(defn- slurp* [stream]
-  (let [writer (StringWriter.)]
-    (io/copy stream writer)
-    (str writer)))
-
 (deftest test-body
   (testing "string body"
     (let [resp (body {} "Hello World")]
-      (is (instance? InputStream (:body resp)))
+      (is (instance? java.io.InputStream (:body resp)))
       (is (= (slurp (:body resp)) "Hello World"))
       (is (= (:content-length resp) 11))))
   (testing "map body"
     (let [resp (body {} (array-map :foo "bar" :fi ["fi" "fo" "fum"]))]
-      (is (instance? InputStream (:body resp)))
+      (is (instance? java.io.InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo=bar&fi=fi&fi=fo&fi=fum"))
       (is (= (:content-length resp) 26))
       (is (= (:content-type resp)
              "application/x-www-form-urlencoded"))))
   (testing "bytes body"
     (let [resp (body {} (.getBytes "foo"))]
-      (is (instance? InputStream (:body resp)))
+      (is (instance? java.io.InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo"))
       (is (= (:content-length resp) 3)))))

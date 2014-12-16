@@ -1,10 +1,7 @@
 (ns ring.mock.request
   "Functions to create mock request maps."
   (:require [clojure.string :as string]
-            [ring.util.codec :as codec])
-  (:import java.util.Map
-           java.io.ByteArrayInputStream
-           [java.net URI URLEncoder]))
+            [ring.util.codec :as codec]))
 
 (defn- encode-params
   "Turn a map of parameters into a urlencoded string."
@@ -65,9 +62,9 @@
 (defmethod body (class (byte-array 0)) [request bytes]
   (-> request
       (content-length (count bytes))
-      (assoc :body (ByteArrayInputStream. bytes))))
+      (assoc :body (java.io.ByteArrayInputStream. bytes))))
 
-(defmethod body Map [request params]
+(defmethod body java.util.Map [request params]
   (-> request
       (content-type "application/x-www-form-urlencoded")
       (body (encode-params params))))
@@ -83,7 +80,7 @@
   ([method uri]
      (request method uri nil))
   ([method uri params]
-     (let [uri    (URI. uri)
+     (let [uri    (java.net.URI. uri)
            host   (or (.getHost uri) "localhost")
            port   (if (not= (.getPort uri) -1) (.getPort uri))
            scheme (.getScheme uri)
