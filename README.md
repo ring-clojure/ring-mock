@@ -18,16 +18,16 @@ Add the following development dependency to your `project.clj` file:
 ## Example
 
 ```clojure
-(ns your-app.test.core
-  (:use your-app.core
-        clojure.test
-        ring.mock.request))
+(ns your-app.core-test
+  (:require [clojure.test :refer :all]
+            [your-app.core :refer :all]
+            [ring.mock.request :as mock]))
 
 (deftest your-handler-test
-  (is (= (your-handler (request :get "/doc/10"))
-         {:status 200
+  (is (= (your-handler (mock/request :get "/doc/10"))
+         {:status  200
           :headers {"content-type" "text/plain"}
-          :body "Your expected result"})))
+          :body    "Your expected result"})))
 ```
 
 ## License
