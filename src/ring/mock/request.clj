@@ -56,7 +56,7 @@
   {:arglists '([request body-value])}
   (fn [request x] (type x)))
 
-(defmethod body String [request string]
+(defmethod body String [request ^String string]
   (body request (.getBytes string)))
 
 (defmethod body (class (byte-array 0)) [request bytes]
