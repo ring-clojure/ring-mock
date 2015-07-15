@@ -96,6 +96,6 @@
                     :headers        {"host" (if port
                                               (str host ":" port)
                                               host)}}]
-       (if (#{:get :head} method)
+       (if (#{:get :head :delete} method)
          (merge-query request params)
          (body request params)))))
