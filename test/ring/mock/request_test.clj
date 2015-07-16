@@ -46,6 +46,9 @@
            "x=y"))
     (is (= (:query-string (request :get "/" {:x "a b"}))
            "x=a+b")))
+  (testing "added params in :delete"
+    (is (= (:query-string (request :delete "/" (array-map :x "y" :z "n")))
+           "x=y&z=n")))
   (testing "added params in :post"
     (let [req (request :post "/" (array-map :x "y" :z "n"))]
       (is (= (slurp (:body req))
