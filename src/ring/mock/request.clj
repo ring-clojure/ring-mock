@@ -72,6 +72,11 @@
 (defmethod body nil [request params]
   request)
 
+(def default-port
+  "A map of the default ports for a scheme."
+  {:http 80
+   :https 443})
+
 (defn request
   "Create a minimal valid request map from a HTTP method keyword, a string
   containing a URI, and an optional map of parameters that will be added to
@@ -81,17 +86,17 @@
      (request method uri nil))
   ([method uri params]
      (let [uri    (java.net.URI. uri)
+           scheme (keyword (or (.getScheme uri) "http"))
            host   (or (.getHost uri) "localhost")
-           port   (if (not= (.getPort uri) -1) (.getPort uri))
-           scheme (.getScheme uri)
+           port   (when (not= (.getPort uri) -1) (.getPort uri))
            path   (.getRawPath uri)
            query  (.getRawQuery uri)
-           request {:server-port    (or port 80)
+           request {:server-port    (or port (default-port scheme))
                     :server-name    host
                     :remote-addr    "localhost"
                     :uri            (if (string/blank? path) "/" path)
                     :query-string   query
-                    :scheme         (or (keyword scheme) :http)
+                    :scheme         scheme
                     :request-method method
                     :headers        {"host" (if port
                                               (str host ":" port)

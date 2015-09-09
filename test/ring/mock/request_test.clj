@@ -32,6 +32,14 @@
                         "content-type" "application/x-www-form-urlencoded"
                         "content-length" "8"}}))
       (is (= (slurp body) "quux=zot"))))
+  (testing "absolute http uri with implicit port"
+    (let [{:keys [headers server-port]} (request :get "http://example.test")]
+      (is (= server-port 80))
+      (is (= (get headers "host") "example.test"))))
+  (testing "absolute https uri with implicit port"
+    (let [{:keys [headers server-port]} (request :get "https://example.test")]
+      (is (= server-port 443))
+      (is (= (get headers "host") "example.test"))))
   (testing "nil path"
     (is (= (:uri (request :get "http://example.com")) "/")))
   (testing "only params in :get"
