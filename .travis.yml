@@ -1,5 +1,6 @@
 language: clojure
 script: lein test-all
+sudo: false
 jdk:
   - openjdk7
   - openjdk6
