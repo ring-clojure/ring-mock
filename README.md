@@ -11,7 +11,7 @@ purposes.
 
 Add the following development dependency to your `project.clj` file:
 
-    [ring/ring-mock "0.2.0"]
+    [ring/ring-mock "0.3.0"]
 
 ## Documentation
 
