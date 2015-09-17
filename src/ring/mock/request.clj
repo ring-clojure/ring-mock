@@ -1,6 +1,7 @@
 (ns ring.mock.request
   "Functions to create mock request maps."
   (:require [clojure.string :as string]
+            [clojure.data.json :as json]
             [ring.util.codec :as codec]))
 
 (defn- encode-params
@@ -65,9 +66,11 @@
       (assoc :body (java.io.ByteArrayInputStream. bytes))))
 
 (defmethod body java.util.Map [request params]
-  (-> request
+  (if (= (:content-type request) "application/json")
+    (body request (json/write-str params))
+    (-> request
       (content-type "application/x-www-form-urlencoded")
-      (body (encode-params params))))
+      (body (encode-params params)))))
 
 (defmethod body nil [request params]
   request)

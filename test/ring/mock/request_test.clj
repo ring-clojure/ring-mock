@@ -126,6 +126,9 @@
       (is (= (:content-length resp) 26))
       (is (= (:content-type resp)
              "application/x-www-form-urlencoded"))))
+  (testing "map body on json request"
+    (let [resp (body {:content-type "application/json"} (array-map :foo "bar"))]
+      (is (= (:content-type resp) "application/json"))))
   (testing "bytes body"
     (let [resp (body {} (.getBytes "foo"))]
       (is (instance? java.io.InputStream (:body resp)))
