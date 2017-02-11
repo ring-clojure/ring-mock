@@ -90,6 +90,14 @@
   (is (= (header {} :x-foo "Bar")
          {:headers {"x-foo" "Bar"}})))
 
+(deftest test-cookie
+  (is (= (cookie {} "Foo" "Bar")
+         {:headers {"cookie" "Foo=Bar"}}))
+  (is (= (cookie {:headers {"cookie" "a=b"}} "c" "d")
+         {:headers {"cookie" "a=b; c=d"}}))
+  (is (= (cookie {} :foo "bar")
+         {:headers {"cookie" "foo=bar"}})))
+
 (deftest test-content-type
   (is (= (content-type {} "text/html")
          {:content-type "text/html"

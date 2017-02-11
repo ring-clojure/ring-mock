@@ -15,6 +15,17 @@
   (let [header (string/lower-case (name header))]
     (assoc-in request [:headers header] (str value))))
 
+(defn cookie
+  "Add a cookie to the request headers map"
+  [request cookie-name value]
+  (let [cookie-name (name cookie-name)
+        cookie-string (str cookie-name "=" value)]
+    (update-in request [:headers "cookie"]
+               (fn [cookie-header]
+                 (if cookie-header
+                   (str cookie-header "; " cookie-string)
+                   cookie-string)))))
+
 (defn content-type
   "Set the content type of the request map."
   [request mime-type]
