@@ -11,7 +11,6 @@
             :server-name "localhost"
             :remote-addr "localhost"
             :uri "/foo"
-            :query-string nil
             :scheme :http
             :request-method :get
             :headers {"host" "localhost"}})))
@@ -63,7 +62,7 @@
     (let [req (request :post "/" (array-map :x "y" :z "n"))]
       (is (= (slurp (:body req))
              "x=y&z=n"))
-      (is (nil? (:query-string req))))
+      (is (not (contains? req :query-string))))
     (let [req (request :post "/?a=b" {:x "y"})]
       (is (= (slurp (:body req))
              "x=y"))
@@ -103,6 +102,9 @@
           :headers {"content-length" "10"}})))
 
 (deftest test-query-string
+  (testing "nil"
+    (is (= (query-string {} nil)
+           {})))
   (testing "string"
     (is (= (query-string {} "a=b")
            {:query-string "a=b"})))

@@ -41,14 +41,17 @@
 (defn- merge-query
   "Merge the supplied parameters into the query string of the request."
   [request params]
-  (assoc request :query-string (combined-query request params)))
+  (if-let [qs (combined-query request params)]
+    (assoc request :query-string qs)
+    request))
 
 (defn query-string
   "Set the query string of the request to a string or a map of parameters."
   [request params]
-  (if (map? params)
-    (assoc request :query-string (encode-params params))
-    (assoc request :query-string params)))
+  (cond
+    (nil? params) request
+    (map? params) (assoc request :query-string (encode-params params))
+    :else (assoc request :query-string params)))
 
 (defmulti body
   "Set the body of the request. The supplied body value can be a string or
@@ -96,12 +99,14 @@
                     :server-name    host
                     :remote-addr    "localhost"
                     :uri            (if (string/blank? path) "/" path)
-                    :query-string   query
                     :scheme         scheme
                     :request-method method
                     :headers        {"host" (if port
                                               (str host ":" port)
-                                              host)}}]
+                                              host)}}
+           request (if query
+                     (assoc request :query-string query)
+                     request)]
        (if (#{:get :head :delete} method)
          (merge-query request params)
          (body request params)))))
