@@ -135,3 +135,24 @@
       (is (instance? java.io.InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo"))
       (is (= (:content-length resp) 3)))))
+
+(defmacro when-clojure-spec
+  [& body]
+  (when (try
+          (require '[clojure.spec :as s])
+          true
+          (catch Exception _
+            (binding [*out* *err*]
+              (println "ring-mock: Skipping ring-spec tests."))
+            false))
+    `(do
+       (require 'ring.core.spec)
+       ~@body)))
+
+(deftest test-specs
+  (when-clojure-spec
+   (doseq [req [(-> (request :get "/foo/bar") (query-string nil))
+                (request :put "/foo/bar")
+                (request :something "/foo" {:params true})]]
+     (is (s/valid? :ring/request req)
+         (s/explain-str :ring/request req)))))
