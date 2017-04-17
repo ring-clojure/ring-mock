@@ -6,7 +6,8 @@
 (deftest test-request
   (testing "relative uri"
     (is (= (request :get "/foo")
-           {:server-port 80
+           {:protocol "HTTP/1.1"
+            :server-port 80
             :server-name "localhost"
             :remote-addr "localhost"
             :uri "/foo"
@@ -19,7 +20,8 @@
           literal-request (dissoc request :body)
           body (:body request)]
       (is (= literal-request
-             {:server-port 8443
+             {:protocol "HTTP/1.1"
+              :server-port 8443
               :server-name "example.com"
               :remote-addr "localhost"
               :uri "/foo"

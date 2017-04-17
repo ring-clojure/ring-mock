@@ -91,7 +91,8 @@
            port   (when (not= (.getPort uri) -1) (.getPort uri))
            path   (.getRawPath uri)
            query  (.getRawQuery uri)
-           request {:server-port    (or port (default-port scheme))
+           request {:protocol       "HTTP/1.1"
+                    :server-port    (or port (default-port scheme))
                     :server-name    host
                     :remote-addr    "localhost"
                     :uri            (if (string/blank? path) "/" path)
