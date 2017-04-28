@@ -6,11 +6,11 @@
 (deftest test-request
   (testing "relative uri"
     (is (= (request :get "/foo")
-           {:server-port 80
+           {:protocol "HTTP/1.1"
+            :server-port 80
             :server-name "localhost"
             :remote-addr "localhost"
             :uri "/foo"
-            :query-string nil
             :scheme :http
             :request-method :get
             :headers {"host" "localhost"}})))
@@ -19,7 +19,8 @@
           literal-request (dissoc request :body)
           body (:body request)]
       (is (= literal-request
-             {:server-port 8443
+             {:protocol "HTTP/1.1"
+              :server-port 8443
               :server-name "example.com"
               :remote-addr "localhost"
               :uri "/foo"
@@ -61,7 +62,7 @@
     (let [req (request :post "/" (array-map :x "y" :z "n"))]
       (is (= (slurp (:body req))
              "x=y&z=n"))
-      (is (nil? (:query-string req))))
+      (is (not (contains? req :query-string))))
     (let [req (request :post "/?a=b" {:x "y"})]
       (is (= (slurp (:body req))
              "x=y"))
@@ -101,6 +102,9 @@
           :headers {"content-length" "10"}})))
 
 (deftest test-query-string
+  (testing "nil"
+    (is (= (query-string {} nil)
+           {})))
   (testing "string"
     (is (= (query-string {} "a=b")
            {:query-string "a=b"})))
@@ -131,3 +135,24 @@
       (is (instance? java.io.InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo"))
       (is (= (:content-length resp) 3)))))
+
+(defmacro when-clojure-spec
+  [& body]
+  (when (try
+          (require '[clojure.spec :as s])
+          true
+          (catch Exception _
+            (binding [*out* *err*]
+              (println "ring-mock: Skipping ring-spec tests."))
+            false))
+    `(do
+       (require 'ring.core.spec)
+       ~@body)))
+
+(deftest test-specs
+  (when-clojure-spec
+   (doseq [req [(-> (request :get "/foo/bar") (query-string nil))
+                (request :put "/foo/bar")
+                (request :something "/foo" {:params true})]]
+     (is (s/valid? :ring/request req)
+         (s/explain-str :ring/request req)))))
