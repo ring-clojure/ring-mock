@@ -6,8 +6,11 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [cheshire "5.8.0"]
                  [ring/ring-codec "1.0.1"]]
-  :plugins [[codox "0.10.3"]]
-  :codox {:project {:name "Ring-Mock"}}
+  :plugins [[lein-codox "0.10.3"]]
+  :codox
+  {:project     {:name "Ring-Mock"}
+   :output-path "codox"
+   :source-uri  "https://github.com/ring-clojure/ring/blob/{version}/{filepath}#L{line}"}
   :aliases {"test-all" ["with-profile" "default:+1.6:+1.7:+1.8:+1.9" "test"]}
   :profiles
   {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
