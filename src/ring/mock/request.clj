@@ -15,6 +15,11 @@
   (let [header (string/lower-case (name header))]
     (assoc-in request [:headers header] (str value))))
 
+(defn headers
+  "Add multiple HTTP headers to the request map."
+  [request headers]
+  (reduce #(apply header %1 %2) request headers))
+
 (defn content-type
   "Set the content type of the request map."
   [request mime-type]
