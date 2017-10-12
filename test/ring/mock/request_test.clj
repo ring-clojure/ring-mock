@@ -136,6 +136,15 @@
       (is (= (slurp (:body resp)) "foo"))
       (is (= (:content-length resp) 3)))))
 
+(deftest test-json-body
+  (testing "json body"
+    (let [resp (json-body {} {:baz ["qu" "qi" "qo"]})]
+      (is (= (:content-type resp) "application/json"))
+      (is (instance? java.io.InputStream (:body resp)))
+      (is (= (slurp (:body resp))
+             "{\"baz\":[\"qu\",\"qi\",\"qo\"]}"))
+      (is (= (:content-length resp) 24)))))
+
 (defmacro when-clojure-spec
   [& body]
   (when (try

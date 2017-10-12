@@ -4,6 +4,7 @@
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.5.1"]
+                 [cheshire "5.8.0"]
                  [ring/ring-codec "1.0.1"]]
   :plugins [[codox "0.10.3"]]
   :codox {:project {:name "Ring-Mock"}}
