@@ -1,6 +1,7 @@
 (ns ring.mock.request
   "Functions to create mock request maps."
-  (:require [clojure.string :as string]
+  (:require [cheshire.core :as json]
+            [clojure.string :as string]
             [ring.util.codec :as codec]))
 
 (defn- encode-params
@@ -74,6 +75,14 @@
 
 (defmethod body nil [request params]
   request)
+
+(defn json-body
+  "Set the body of the request to a JSON structure. The supplied body value
+  should be a map of parameters to be converted to JSON."
+  [request body-value]
+  (-> request
+      (content-type "application/json")
+      (body (json/generate-string body-value))))
 
 (def default-port
   "A map of the default ports for a scheme."
