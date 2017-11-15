@@ -10,7 +10,7 @@
   :codox
   {:project     {:name "Ring-Mock"}
    :output-path "codox"
-   :source-uri  "https://github.com/ring-clojure/ring/blob/{version}/{filepath}#L{line}"}
+   :source-uri  "https://github.com/ring-clojure/ring-mock/blob/{version}/{filepath}#L{line}"}
   :aliases {"test-all" ["with-profile" "default:+1.6:+1.7:+1.8:+1.9" "test"]}
   :profiles
   {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
