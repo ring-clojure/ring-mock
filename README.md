@@ -33,10 +33,10 @@ Add the following development dependency to your `project.clj` file:
           
 (deftest your-json-handler-test
   (is (= (your-handler (-> (mock/request :post "/api/endpoint")
-                           (json-body {:foo "bar"})))
-         {:status 201
+                           (mock/json-body {:foo "bar"})))
+         {:status  201
           :headers {"content-type" "application/json"}
-          :body {:key "your expected result"}})))
+          :body    {:key "your expected result"}})))
 ```
 
 ## License
