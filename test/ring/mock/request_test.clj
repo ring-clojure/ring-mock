@@ -91,6 +91,16 @@
   (is (= (header {} :x-foo "Bar")
          {:headers {"x-foo" "Bar"}})))
 
+(deftest test-headers
+  (is (= (headers {} {"X-Foo" "Bar"
+                      "X-Baz" "Qux"})
+         {:headers {"x-foo" "Bar"
+                    "x-baz" "Qux"}}))
+  (is (= (headers {} {:x-foo "Bar"
+                      :x-baz "Qux"})
+         {:headers {"x-foo" "Bar"
+                    "x-baz" "Qux"}})))
+
 (deftest test-content-type
   (is (= (content-type {} "text/html")
          {:content-type "text/html"
