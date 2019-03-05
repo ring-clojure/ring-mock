@@ -106,7 +106,7 @@
            request {:protocol       "HTTP/1.1"
                     :server-port    (or port (default-port scheme))
                     :server-name    host
-                    :remote-addr    "localhost"
+                    :remote-addr    "127.0.0.1"
                     :uri            (if (string/blank? path) "/" path)
                     :scheme         scheme
                     :request-method method
