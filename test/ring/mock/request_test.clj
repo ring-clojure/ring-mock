@@ -9,7 +9,7 @@
            {:protocol "HTTP/1.1"
             :server-port 80
             :server-name "localhost"
-            :remote-addr "localhost"
+            :remote-addr "127.0.0.1"
             :uri "/foo"
             :scheme :http
             :request-method :get
@@ -22,7 +22,7 @@
              {:protocol "HTTP/1.1"
               :server-port 8443
               :server-name "example.com"
-              :remote-addr "localhost"
+              :remote-addr "127.0.0.1"
               :uri "/foo"
               :query-string "bar=baz"
               :scheme :https
