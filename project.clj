@@ -11,8 +11,10 @@
   {:project     {:name "Ring-Mock"}
    :output-path "codox"
    :source-uri  "https://github.com/ring-clojure/ring-mock/blob/{version}/{filepath}#L{line}"}
-  :aliases {"test-all" ["with-profile" "default:+1.6:+1.7:+1.8:+1.9" "test"]}
+  :aliases {"test-all" ["with-profile" "default:+1.8:+1.9:+1.10" "test"]}
   :profiles
-  {:1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
-   :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]
-                        [ring/ring-spec "0.0.4"]]}})
+  {:1.8  {:dependencies [[org.clojure/clojure "1.8.0"]]}
+   :1.9  {:dependencies [[org.clojure/clojure "1.9.0"]
+                         [ring/ring-spec "0.0.4"]]}
+   :1.10 {:dependencies [[org.clojure/clojure "1.10.0"]
+                         [ring/ring-spec "0.0.4"]]}})
