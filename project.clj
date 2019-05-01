@@ -1,4 +1,4 @@
-(defproject ring/ring-mock "0.3.2"
+(defproject ring/ring-mock "0.4.0"
   :description "A library for creating mock Ring request maps"
   :url "https://github.com/ring-clojure/ring-mock"
   :license {:name "The MIT License"
