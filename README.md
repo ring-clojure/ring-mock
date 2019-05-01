@@ -41,6 +41,6 @@ Add the following development dependency to your `project.clj` file:
 
 ## License
 
-Copyright © 2017 James Reeves
+Copyright © 2019 James Reeves
 
 Distributed under the MIT License.
