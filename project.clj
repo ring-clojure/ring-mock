@@ -3,9 +3,9 @@
   :url "https://github.com/ring-clojure/ring-mock"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [cheshire "5.8.1"]
-                 [ring/ring-codec "1.1.1"]]
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [cheshire "5.10.0"]
+                 [ring/ring-codec "1.1.2"]]
   :plugins [[lein-codox "0.10.3"]]
   :codox
   {:project     {:name "Ring-Mock"}

@@ -1,8 +1,8 @@
-/target
-/lib
-/classes
-/checkouts
-/codox
+target
+lib
+classes
+checkouts
+codox
 pom.xml
 pom.xml.asc
 *.jar
@@ -11,3 +11,6 @@ pom.xml.asc
 .lein-failures
 .lein-plugins
 .lein-env
+.idea
+*.iml
+.nrepl-port
