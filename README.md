@@ -28,7 +28,7 @@ Add the following development dependency to your `project.clj` file:
          {:status  200
           :headers {"content-type" "text/plain"}
           :body    "Your expected result"})))
-          
+
 (deftest your-json-handler-test
   (is (= (your-handler (-> (mock/request :post "/api/endpoint")
                            (mock/json-body {:foo "bar"})))
