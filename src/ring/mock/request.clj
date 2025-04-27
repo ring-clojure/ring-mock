@@ -12,7 +12,7 @@
 (defn- encode-params
   "Turn a map of parameters into a urlencoded string."
   [params]
-  (if params
+  (when params
     (codec/form-encode params)))
 
 (defn header
@@ -50,7 +50,7 @@
   "Create a query string from a URI and a map of parameters."
   [request params]
   (let [query (:query-string request)]
-    (if (or query params)
+    (when (or query params)
       (string/join "&"
         (remove string/blank?
                 [query (encode-params params)])))))
@@ -74,7 +74,7 @@
   "Set the body of the request. The supplied body value can be a string or
   a map of parameters to be url-encoded."
   {:arglists '([request body-value])}
-  (fn [request x] (type x)))
+  (fn [_request x] (type x)))
 
 (defmethod body String [request ^String string]
   (body request (.getBytes string)))
@@ -89,7 +89,7 @@
       (content-type "application/x-www-form-urlencoded")
       (body (encode-params params))))
 
-(defmethod body nil [request params]
+(defmethod body nil [request _params]
   request)
 
 (defn json-body

@@ -1,7 +1,9 @@
 (ns ring.mock.request-test
-  (:require [clojure.java.io :as io])
-  (:use clojure.test
-        ring.mock.request))
+  (:require [clojure.java.io :as io]
+            [clojure.test :refer [deftest is testing]]
+            [ring.mock.request :refer [body content-length content-type cookie
+                                       header json-body multipart-body
+                                       query-string request]]))
 
 (deftest test-request
   (testing "relative uri"
