@@ -2,7 +2,12 @@
   "Functions to create mock request maps."
   (:require [cheshire.core :as json]
             [clojure.string :as string]
-            [ring.util.codec :as codec]))
+            [ring.util.codec :as codec]
+            [ring.util.mime-type :as mime])
+  (:import [java.io ByteArrayInputStream ByteArrayOutputStream File]
+           [java.nio.charset Charset]
+           [org.apache.hc.core5.http ContentType HttpEntity]
+           [org.apache.hc.client5.http.entity.mime MultipartEntityBuilder]))
 
 (defn- encode-params
   "Turn a map of parameters into a urlencoded string."
@@ -94,6 +99,57 @@
   (-> request
       (content-type "application/json")
       (body (json/generate-string body-value))))
+
+(def ^:private default-charset
+  (Charset/forName "UTF-8"))
+
+(defn- file? [f]
+  (instance? File f))
+
+(defn add-multipart-part [builder k v]
+  (let [param    (if (map? v) v {:value v})
+        value    (if (string? (:value param))
+                   (.getBytes (:value param) default-charset)
+                   (:value param))
+        mimetype (ContentType/parse
+                  (or (:content-type param)
+                      (when (file? value)
+                        (mime/ext-mime-type (.getName ^File value)))
+                      (if (string? (:value param))
+                        "text/plain; charset=UTF-8"
+                        "application/octet-stream")))
+        filename (or (:filename param)
+                     (when (file? value) (.getName ^File value)))]
+    (.addBinaryBody builder (name k) value mimetype filename)))
+
+(defn multipart-entity ^HttpEntity [params]
+  (let [builder (MultipartEntityBuilder/create)]
+    (.setCharset builder default-charset)
+    (doseq [[k v] params]
+      (add-multipart-part builder k v))
+    (.build builder)))
+
+(defn multipart-body
+  "Set the body of the request to a map of parameters encoded as a multipart
+  form. The parameters are supplied as a map. The keys should be keywords or
+  strings. The values should be maps that contain the following keys:
+
+    :value        - a string, byte array, File or InputStream
+    :filename     - the name of the file the value came from (optional)
+    :content-type - the content type of the value (optional)
+
+  The value may also be a string, byte array, File or InputStream instead of a
+  map. In that case, it will be treated as if it were a map with a single :value
+  key."
+  [request params]
+  (let [entity (multipart-entity params)
+        out    (ByteArrayOutputStream.)]
+    (.writeTo entity out)
+    (.close out)
+    (-> request
+        (content-length (.getContentLength entity))
+        (content-type (.getContentType entity))
+        (assoc :body (ByteArrayInputStream. (.toByteArray out))))))
 
 (def default-port
   "A map of the default ports for a scheme."

@@ -153,6 +153,82 @@
              "{\"baz\":[\"qu\",\"qi\",\"qo\"]}"))
       (is (= (:content-length resp) 24)))))
 
+(defn- get-boundary [{:keys [content-type]}]
+  (re-find #"(?<=boundary=)[^;]*" content-type))
+
+(deftest test-multipart-body
+  (testing "string values"
+    (let [response (multipart-body {} {:foo "a"
+                                       :bar {:value "b"}
+                                       :baz {:value "<html></html>"
+                                             :content-type "text/html"}})
+          boundary (get-boundary response)]
+      (is (= (:content-length response)
+             (+ 284 (* 4 (count boundary)))))
+      (is (= (:content-type response)
+             (str "multipart/form-data; charset=ISO-8859-1; "
+                  "boundary=" boundary)))
+      (is (= (slurp (:body response))
+             (str "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"foo\"\r\n"
+                  "Content-Type: text/plain; charset=UTF-8\r\n\r\n"
+                  "a\r\n"
+                  "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"bar\"\r\n"
+                  "Content-Type: text/plain; charset=UTF-8\r\n\r\n"
+                  "b\r\n"
+                  "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"baz\"\r\n"
+                  "Content-Type: text/html\r\n\r\n"
+                  "<html></html>\r\n"
+                  "--" boundary "--\r\n")))))
+  (testing "byte array values"
+    (let [response (multipart-body {} {:foo (.getBytes "a" "UTF-8")
+                                       :bar {:value (.getBytes "b" "UTF-8")
+                                             :content-type "image/png"
+                                             :filename "bee.png"}})
+          boundary (get-boundary response)]
+      (is (= (:content-length response)
+             (+ 197 (* 3 (count boundary)))))
+      (is (= (:content-type response)
+             (str "multipart/form-data; charset=ISO-8859-1; "
+                  "boundary=" boundary)))
+      (is (= (slurp (:body response))
+             (str "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"foo\"\r\n"
+                  "Content-Type: application/octet-stream\r\n\r\n"
+                  "a\r\n"
+                  "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"bar\"; "
+                  "filename=\"bee.png\"\r\n"
+                  "Content-Type: image/png\r\n\r\n"
+                  "b\r\n"
+                  "--" boundary "--\r\n")))))
+  (testing "file values"
+    (let [test-file (io/file (io/resource "ring/mock/test.txt"))
+          response  (multipart-body {} {:foo test-file
+                                        :bar {:value test-file
+                                              :content-type "text/html"
+                                              :filename "test.html"}})
+          boundary  (get-boundary response)]
+      (is (= (:content-length response)
+             (+ 208 (* 3 (count boundary)))))
+      (is (= (:content-type response)
+             (str "multipart/form-data; charset=ISO-8859-1; "
+                  "boundary=" boundary)))
+      (is (= (slurp (:body response))
+             (str "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"foo\"; "
+                  "filename=\"test.txt\"\r\n"
+                  "Content-Type: text/plain\r\n\r\n"
+                  "a\n\r\n"
+                  "--" boundary "\r\n"
+                  "Content-Disposition: form-data; name=\"bar\"; "
+                  "filename=\"test.html\"\r\n"
+                  "Content-Type: text/html\r\n\r\n"
+                  "a\n\r\n"
+                  "--" boundary "--\r\n"))))))
+
 (defmacro when-clojure-spec
   [& body]
   (when (try
