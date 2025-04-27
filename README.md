@@ -7,7 +7,11 @@ purposes.
 
 ## Installation
 
-Add the following development dependency to your `project.clj` file:
+Add the following dependency to your deps.edn file:
+
+    ring/ring-mock {:mvn/version "0.4.0"}
+
+Or to your Leiningen project file:
 
     [ring/ring-mock "0.4.0"]
 
