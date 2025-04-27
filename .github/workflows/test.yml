@@ -1,0 +1,29 @@
+name: Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Install clojure tools
+        uses: DeLaGuardo/setup-clojure@13.2
+        with:
+          lein: 2.11.2
+
+      - name: Cache clojure dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: cljdeps-${{ hashFiles('project.clj') }}
+          restore-keys: cljdeps-
+
+      - name: Run tests
+        run: lein test-all

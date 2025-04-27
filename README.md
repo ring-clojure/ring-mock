@@ -1,6 +1,4 @@
-# Ring-Mock
-
-[![Build Status](https://travis-ci.org/ring-clojure/ring-mock.svg?branch=master)](https://travis-ci.org/ring-clojure/ring-mock)
+# Ring-Mock [![Build Status](https://github.com/ring-clojure/ring-mock/actions/workflows/test.yml/badge.svg)](https://github.com/ring-clojure/ring-mock/actions/workflows/test.yml)
 
 Ring-Mock is a library for creating [Ring][] request maps for testing
 purposes.
