@@ -106,7 +106,7 @@
 (defn- file? [f]
   (instance? File f))
 
-(defn add-multipart-part [builder k v]
+(defn- add-multipart-part [builder k v]
   (let [param    (if (map? v) v {:value v})
         value    (if (string? (:value param))
                    (.getBytes (:value param) default-charset)
@@ -122,7 +122,7 @@
                      (when (file? value) (.getName ^File value)))]
     (.addBinaryBody builder (name k) value mimetype filename)))
 
-(defn multipart-entity ^HttpEntity [params]
+(defn- multipart-entity ^HttpEntity [params]
   (let [builder (MultipartEntityBuilder/create)]
     (.setCharset builder default-charset)
     (doseq [[k v] params]
