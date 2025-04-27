@@ -9,11 +9,8 @@
            [org.apache.hc.core5.http ContentType HttpEntity]
            [org.apache.hc.client5.http.entity.mime MultipartEntityBuilder]))
 
-(defn- encode-params
-  "Turn a map of parameters into a urlencoded string."
-  [params]
-  (when params
-    (codec/form-encode params)))
+(defn- encode-params [params]
+  (when params (codec/form-encode params)))
 
 (defn header
   "Add a HTTP header to the request map."
@@ -46,18 +43,14 @@
       (assoc :content-length length)
       (header :content-length length)))
 
-(defn- combined-query
-  "Create a query string from a URI and a map of parameters."
-  [request params]
+(defn- combined-query [request params]
   (let [query (:query-string request)]
     (when (or query params)
       (string/join "&"
         (remove string/blank?
                 [query (encode-params params)])))))
 
-(defn- merge-query
-  "Merge the supplied parameters into the query string of the request."
-  [request params]
+(defn- merge-query [request params]
   (if-let [qs (combined-query request params)]
     (assoc request :query-string qs)
     request))
