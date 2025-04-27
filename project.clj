@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [cheshire "6.0.0"]
                  [ring/ring-codec "1.3.0"]]
-  :plugins [[lein-codox "0.10.3"]]
+  :plugins [[lein-codox "0.10.8"]]
   :codox
   {:project     {:name "Ring-Mock"}
    :output-path "codox"
