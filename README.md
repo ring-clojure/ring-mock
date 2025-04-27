@@ -43,6 +43,6 @@ Or to your Leiningen project file:
 
 ## License
 
-Copyright © 2019 James Reeves
+Copyright © 2025 James Reeves
 
 Distributed under the MIT License.
