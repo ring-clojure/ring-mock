@@ -1,9 +1,11 @@
 (ns ring.mock.request-test
   (:require [clojure.java.io :as io]
+            [clojure.spec.alpha :as s]
             [clojure.test :refer [deftest is testing]]
             [ring.mock.request :refer [body content-length content-type cookie
                                        header json-body multipart-body
-                                       query-string request]]))
+                                       query-string request]])
+  (:import [java.io InputStream]))
 
 (deftest test-request
   (testing "relative uri"
@@ -130,19 +132,19 @@
 (deftest test-body
   (testing "string body"
     (let [resp (body {} "Hello World")]
-      (is (instance? java.io.InputStream (:body resp)))
+      (is (instance? InputStream (:body resp)))
       (is (= (slurp (:body resp)) "Hello World"))
       (is (= (:content-length resp) 11))))
   (testing "map body"
     (let [resp (body {} (array-map :foo "bar" :fi ["fi" "fo" "fum"]))]
-      (is (instance? java.io.InputStream (:body resp)))
+      (is (instance? InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo=bar&fi=fi&fi=fo&fi=fum"))
       (is (= (:content-length resp) 26))
       (is (= (:content-type resp)
              "application/x-www-form-urlencoded"))))
   (testing "bytes body"
     (let [resp (body {} (.getBytes "foo"))]
-      (is (instance? java.io.InputStream (:body resp)))
+      (is (instance? InputStream (:body resp)))
       (is (= (slurp (:body resp)) "foo"))
       (is (= (:content-length resp) 3)))))
 
@@ -150,7 +152,7 @@
   (testing "json body"
     (let [resp (json-body {} {:baz ["qu" "qi" "qo"]})]
       (is (= (:content-type resp) "application/json"))
-      (is (instance? java.io.InputStream (:body resp)))
+      (is (instance? InputStream (:body resp)))
       (is (= (slurp (:body resp))
              "{\"baz\":[\"qu\",\"qi\",\"qo\"]}"))
       (is (= (:content-length resp) 24)))))
@@ -229,7 +231,16 @@
                   "filename=\"test.html\"\r\n"
                   "Content-Type: text/html\r\n\r\n"
                   "a\n\r\n"
-                  "--" boundary "--\r\n"))))))
+                  "--" boundary "--\r\n")))))
+  (testing "not supported type"
+    (try
+      (multipart-body {} {:foo :keyword
+                          :bar {:value        :keyword
+                                :content-type "text/html"
+                                :filename     "test.html"}})
+      (catch Exception e
+        (let [expected-message "Cannot encode a value of type class clojure.lang.Keyword as a multipart body."]
+          (is (= expected-message (.getMessage ^Exception e))))))))
 
 (defmacro when-clojure-spec
   [& body]

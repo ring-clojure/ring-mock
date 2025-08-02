@@ -4,8 +4,10 @@
             [clojure.string :as string]
             [ring.util.codec :as codec]
             [ring.util.mime-type :as mime])
-  (:import [java.io ByteArrayInputStream ByteArrayOutputStream File]
+  (:import [java.io ByteArrayInputStream ByteArrayOutputStream File InputStream]
+           [java.net URI]
            [java.nio.charset Charset]
+           [java.util Map]
            [org.apache.hc.core5.http ContentType HttpEntity]
            [org.apache.hc.client5.http.entity.mime MultipartEntityBuilder]))
 
@@ -75,9 +77,9 @@
 (defmethod body (class (byte-array 0)) [request bytes]
   (-> request
       (content-length (count bytes))
-      (assoc :body (java.io.ByteArrayInputStream. bytes))))
+      (assoc :body (ByteArrayInputStream. bytes))))
 
-(defmethod body java.util.Map [request params]
+(defmethod body Map [request params]
   (-> request
       (content-type "application/x-www-form-urlencoded")
       (body (encode-params params))))
@@ -99,11 +101,30 @@
 (defn- file? [f]
   (instance? File f))
 
-(defn- add-multipart-part [builder k v]
+(defn- str->bytes ^bytes [^String s]
+  (.getBytes s ^Charset default-charset))
+
+(defn- add-binary-body
+  [^MultipartEntityBuilder builder key value ^ContentType mimetype
+   ^String filename]
+  (let [k (name key)]
+    (cond
+      (string? value)
+      (.addBinaryBody builder k (str->bytes value) mimetype filename)
+      (bytes? value)
+      (.addBinaryBody builder k ^bytes value mimetype filename)
+      (file? value)
+      (.addBinaryBody builder k ^File value mimetype filename)
+      (instance? InputStream value)
+      (.addBinaryBody builder k ^InputStream value mimetype filename)
+      :else
+      (throw (IllegalArgumentException.
+               (str "Cannot encode a value of type " (type value)
+                    " as a multipart body."))))))
+
+(defn- add-multipart-part [^MultipartEntityBuilder builder k v]
   (let [param    (if (map? v) v {:value v})
-        value    (if (string? (:value param))
-                   (.getBytes (:value param) default-charset)
-                   (:value param))
+        value    (if (map? v) (:value v) v)
         mimetype (ContentType/parse
                   (or (:content-type param)
                       (when (file? value)
@@ -113,11 +134,11 @@
                         "application/octet-stream")))
         filename (or (:filename param)
                      (when (file? value) (.getName ^File value)))]
-    (.addBinaryBody builder (name k) value mimetype filename)))
+    (add-binary-body builder (name k) value mimetype filename)))
 
 (defn- multipart-entity ^HttpEntity [params]
   (let [builder (MultipartEntityBuilder/create)]
-    (.setCharset builder default-charset)
+    (.setCharset builder ^Charset default-charset)
     (doseq [[k v] params]
       (add-multipart-part builder k v))
     (.build builder)))
@@ -157,7 +178,7 @@
   ([method uri]
      (request method uri nil))
   ([method uri params]
-     (let [uri    (java.net.URI. uri)
+     (let [uri    (URI. uri)
            scheme (keyword (or (.getScheme uri) "http"))
            host   (or (.getHost uri) "localhost")
            port   (when (not= (.getPort uri) -1) (.getPort uri))
