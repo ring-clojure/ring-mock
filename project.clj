@@ -5,9 +5,9 @@
             :url "http://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [cheshire "6.0.0"]
-                 [org.apache.httpcomponents.client5/httpclient5 "5.4.4"]
+                 [org.apache.httpcomponents.client5/httpclient5 "5.5"]
                  [ring/ring-codec "1.3.0"]
-                 [ring/ring-core "1.14.1"]]
+                 [ring/ring-core "1.14.2"]]
   :plugins [[lein-codox "0.10.8"]]
   :codox
   {:project     {:name "Ring-Mock"}
