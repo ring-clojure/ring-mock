@@ -9,11 +9,11 @@ purposes.
 
 Add the following dependency to your deps.edn file:
 
-    ring/ring-mock {:mvn/version "0.6.1"}
+    ring/ring-mock {:mvn/version "0.6.2"}
 
 Or to your Leiningen project file:
 
-    [ring/ring-mock "0.6.1"]
+    [ring/ring-mock "0.6.2"]
 
 ## Documentation
 
